@@ -1,0 +1,89 @@
+---
+title: "Analysis.Rmd"
+author: "Amelia Walsh"
+date: "2/12/2021"
+output: html_document
+---
+#### Load Libraries
+```{r}
+library(dplyr)
+```
+
+#### 1. Import the Sequences.csv file.
+```{r}
+Sequences = read.csv("../Rentrez/Sequences.csv")
+```
+
+#### 2. Count the number of each base pair (A, T, C and G), in each of the three sequences. (Hint: do not include any characters from the header, use the nucleotide sequence only; you MIGHT use gsub(), nchar(), for loops, if/then statements)
+```{r}
+#Create new column to store count data
+Sequences$TotalBP = 0
+
+#Count number of base pairs for each sequence using a loop
+for (i in 1:3){
+  
+  #Remove all characters except for A,G,C, and T and count the total
+  n = nchar(gsub("[^A|G|C|T]","", Sequences$Sequence[i]))
+  
+  #Store data in data frame
+  Sequences$TotalBP[i] = n
+}
+
+#Display Results
+Sequences
+```
+#### 3. Print out each sequence.
+```{r}
+print(Sequences$Sequence)
+```
+#### 4. Print out the number of each nucleotide as a table for each of the three sequences.
+```{r}
+#Create data frames to store data
+Adenine = 0
+Guanine = 0
+Cytosine = 0
+Thymine = 0
+
+#Count number of each base pair for each sequence using a loop
+for (i in 1:3){
+  
+  #Remove all characters except for A and count the number of A for each sequence
+  a = nchar(gsub("[^A]","",Sequences$Sequence[i]))
+  Adenine[i] = a
+  
+  #Remove all characters except for G and count the number of G for each sequence
+  g = nchar(gsub("[^G]","",Sequences$Sequence[i]))
+  Guanine[i] = g
+  
+  #Remove all characters except for C and count the number of C for each sequence
+  c = nchar(gsub("[^C]","",Sequences$Sequence[i]))
+  Cytosine[i] = c
+  
+  #Remove all characters except for T and count the number of T for each sequence
+  t = nchar(gsub("[^T]","",Sequences$Sequence[i]))
+  Thymine[i] = t
+}
+#Display Results
+(DT <- data.frame(
+Adenine = Adenine,
+Guanine = Guanine,
+Thymine = Thymine,
+Cytosine = Cytosine,
+Sequence = Sequences$Name
+))
+```
+#### 5. Include an image of a bacteria from the internet, and a link to the Wikipedia page about Borrelia burgdorferi
+
+![Borrelia burgdorferi](https://pixnio.com/free-images/science/microscopy-images/borrelia-burgdorferi/grouping-of-numerous-gram-negative-anaerobic-borrelia-burgdorferi-bacteria.jpg)
+
+[Link to Borrelia burgdorferi Wikipedia Page](https://en.wikipedia.org/wiki/Borrelia_burgdorferi)
+
+#### 6. Calculate GC Content (% of nucleotides that are G or C) and create a final table showing GC content for each sequence ID, for example:
+```{r}
+#Add TotalBP to Nucleotide data frame 
+DT$TotalBP = Sequences$TotalBP
+
+#Calculate GC content for each sequence
+DT %>% 
+  summarise(Sequence_Name = c("HQ433692.1","HQ433694.1","HQ433691.1"), GC_Content = (DT$Guanine + DT$Cytosine)/DT$TotalBP)
+```
